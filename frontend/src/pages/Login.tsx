@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import api from "../api/axios";
-import type { AuthResponse } from "../types";
+import { login as apiLogin } from "../api/auth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -20,11 +19,17 @@ const Login: React.FC = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await api.post<AuthResponse>("/login", {
+      const response = await apiLogin({
         email,
         password,
       });
-      login(response.data.token, response.data.user);
+      // apiLogin returns AuthResponse directly, so we don't need .data access if the previous code was accessing .data from axios response
+      // Waiting to see previous code structure more clearly.
+      // The original code was: const response = await api.post<AuthResponse>("/login", ...);
+      // response.data would be the AuthResponse.
+      // My new apiLogin returns Promise<AuthResponse>.
+      // So 'response' will be the data itself.
+      login(response.authorisation.token, response.user);
       navigate(from, { replace: true });
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to login");

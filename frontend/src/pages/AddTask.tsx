@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../api/axios";
+import { useCreateTask } from "../hooks/useTasks";
 import { ArrowLeft } from "lucide-react";
 
 const AddTask: React.FC = () => {
@@ -11,23 +10,21 @@ const AddTask: React.FC = () => {
     "pending"
   );
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: (newTask: {
-      title: string;
-      description: string;
-      status: string;
-    }) => api.post("/tasks", newTask),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      navigate("/");
-    },
-  });
+  const mutation = useCreateTask();
+
+  const handleSuccess = () => {
+    navigate("/");
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate({ title, description, status });
+    mutation.mutate(
+      { title, description, status },
+      {
+        onSuccess: handleSuccess,
+      }
+    );
   };
 
   return (

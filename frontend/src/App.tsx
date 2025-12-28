@@ -40,7 +40,6 @@ function App() {
               />
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />
-              {/* Fallback route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

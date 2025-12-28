@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import type { Task } from "../types";
 import { CheckCircle, XCircle, Trash2 } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../api/axios";
+import { useUpdateTask, useDeleteTask } from "../hooks/useTasks";
 import clsx from "clsx";
 
 interface TaskItemProps {
@@ -10,35 +9,19 @@ interface TaskItemProps {
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
-  const queryClient = useQueryClient();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const updateMutation = useUpdateTask();
 
-  const updateMutation = useMutation({
-    mutationFn: (updatedTask: Partial<Task>) =>
-      api.put(`/tasks/${task.id}`, updatedTask),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: () => api.delete(`/tasks/${task.id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    },
-    onSettled: () => setIsDeleting(false),
-  });
+  const deleteMutation = useDeleteTask();
 
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this task?")) {
-      setIsDeleting(true);
-      deleteMutation.mutate();
+      deleteMutation.mutate(task.id);
     }
   };
 
   const toggleStatus = () => {
     const newStatus = task.status === "done" ? "pending" : "done";
-    updateMutation.mutate({ status: newStatus });
+    updateMutation.mutate({ id: task.id, status: newStatus });
   };
 
   const isCompleted = task.status === "done";
@@ -107,7 +90,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
 
         <button
           onClick={handleDelete}
-          disabled={isDeleting || deleteMutation.isPending}
+          disabled={deleteMutation.isPending}
           className="p-2 text-red-600 hover:bg-red-50 bg-white border border-red-200 rounded-full transition-colors"
           title="Delete Task"
         >

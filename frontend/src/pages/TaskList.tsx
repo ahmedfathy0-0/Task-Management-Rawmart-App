@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
   PlusCircle,
@@ -9,25 +8,13 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import api from "../api/axios";
-import type { Task, PaginatedResponse } from "../types";
+import { useTasks } from "../hooks/useTasks";
 import TaskItem from "../components/TaskItem";
 
 const TaskList: React.FC = () => {
   const [page, setPage] = useState(1);
 
-  const {
-    data: tasksData,
-    isLoading,
-    error,
-  } = useQuery<PaginatedResponse<Task>>({
-    queryKey: ["tasks", page],
-    queryFn: async () => {
-      const response = await api.get(`/tasks?page=${page}`);
-      return response.data;
-    },
-    placeholderData: (previousData) => previousData,
-  });
+  const { data: tasksData, isLoading, error } = useTasks(page);
 
   if (isLoading) {
     return (
@@ -92,7 +79,6 @@ const TaskList: React.FC = () => {
         )}
       </div>
 
-      {/* Pagination Controls */}
       {tasksData && tasksData.last_page > 1 && (
         <div className="flex justify-center mt-6">
           <nav

@@ -18,8 +18,12 @@ export interface Task {
 }
 
 export interface AuthResponse {
+  status: string;
   user: User;
-  token: string;
+  authorisation: {
+    token: string;
+    type: string;
+  };
 }
 
 export interface Link {

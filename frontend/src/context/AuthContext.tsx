@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import api from "../api/axios";
+import { logout as apiLogout } from "../api/auth";
 import type { User } from "../types";
 
 interface AuthContextType {
@@ -26,13 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const initAuth = async () => {
       if (token) {
         try {
-          // Verify token or fetch user if endpoints allows
-          // For now, we assume if token is there, we try to get user profile if there is an endpoint
-          // But I don't recall seeing a /me endpoint in api.php.
-          // I will assume we might persist user in local storage or just have token for now.
-          // Let's check api.php again internally or just relying on persisting user.
-          // To be safe and simple as requested: We will persist user in localStorage too for now
-          // or just rely on state.
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
             setUser(JSON.parse(storedUser));
@@ -56,9 +49,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
-      await api.post("/logout");
+      await apiLogout();
     } catch (e) {
-      // ignore error on logout
+      console.error("Logout error", e);
     }
     localStorage.removeItem("token");
     localStorage.removeItem("user");

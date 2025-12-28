@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import api from "../api/axios";
-import type { AuthResponse } from "../types";
+import { register as apiRegister } from "../api/auth";
 
 const Register: React.FC = () => {
   const [name, setName] = useState("");
@@ -23,13 +22,13 @@ const Register: React.FC = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await api.post<AuthResponse>("/register", {
+      const response = await apiRegister({
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
       });
-      login(response.data.token, response.data.user);
+      login(response.authorisation.token, response.user);
       navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to register");

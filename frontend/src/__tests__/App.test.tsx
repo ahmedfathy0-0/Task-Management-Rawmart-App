@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 import App from "../App";
 
 // Mock child components that rely on context/routing extensively if needed
