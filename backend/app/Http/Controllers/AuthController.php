@@ -33,16 +33,13 @@ class AuthController extends Controller
         ]);
 
         $token = Auth::guard('api')->login($user);
+        $cookie = cookie('jwt', $token, 60 * 24, null, null, false, true);
 
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+        ])->withCookie($cookie);
     }
 
     public function login(Request $request)
@@ -63,36 +60,34 @@ class AuthController extends Controller
         }
 
         $user = Auth::guard('api')->user();
+        $cookie = cookie('jwt', $token, 60 * 24, null, null, false, true); // HttpOnly=true
+
         return response()->json([
                 'status' => 'success',
                 'message' => 'User logged in successfully',
                 'user' => $user,
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer',
-                ]
-            ]);
+            ])->withCookie($cookie);
     }
 
     public function logout()
     {
         Auth::guard('api')->logout();
+        $cookie = cookie()->forget('jwt');
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
-        ]);
+        ])->withCookie($cookie);
     }
 
     public function refresh()
     {
+        $token = Auth::guard('api')->refresh();
+        $cookie = cookie('jwt', $token, 60 * 24, null, null, false, true);
+
         return response()->json([
             'status' => 'success',
             'message' => 'Token refreshed successfully',
             'user' => Auth::guard('api')->user(),
-            'authorisation' => [
-                'token' => Auth::guard('api')->refresh(),
-                'type' => 'bearer',
-            ]
-        ]);
+        ])->withCookie($cookie);
     }
 }

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { register as apiRegister } from "../api/auth";
 
 const Register: React.FC = () => {
   const [name, setName] = useState("");
@@ -13,7 +12,7 @@ const Register: React.FC = () => {
     [key: string]: string[];
   }>({});
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,13 +25,12 @@ const Register: React.FC = () => {
     setValidationErrors({});
     setLoading(true);
     try {
-      const response = await apiRegister({
+      await register({
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
       });
-      login(response.authorisation.token, response.user);
       navigate("/");
     } catch (err: any) {
       if (err.response?.status === 422 && err.response?.data?.errors) {

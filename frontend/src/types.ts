@@ -21,10 +21,6 @@ export interface AuthResponse {
   status: string;
   message?: string;
   user: User;
-  authorisation: {
-    token: string;
-    type: string;
-  };
 }
 
 export interface Link {

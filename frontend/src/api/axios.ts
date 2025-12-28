@@ -6,23 +6,15 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Request interceptor removed as cookies are handled by browser
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      // window.location.href = '/login'; // Optional: Redirect on 401
-    }
+    // 401 errors are handled by components or auth context
     return Promise.reject(error);
   }
 );
