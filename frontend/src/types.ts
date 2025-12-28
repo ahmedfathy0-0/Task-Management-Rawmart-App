@@ -19,6 +19,7 @@ export interface Task {
 
 export interface AuthResponse {
   status: string;
+  message?: string;
   user: User;
   authorisation: {
     token: string;

@@ -15,7 +15,7 @@ export const createTask = async (task: {
   status: string;
 }): Promise<Task> => {
   const response = await api.post(API_ENDPOINTS.TASKS, task);
-  return response.data;
+  return response.data.data;
 };
 
 export const updateTask = async (
@@ -23,7 +23,7 @@ export const updateTask = async (
   task: Partial<Task>
 ): Promise<Task> => {
   const response = await api.put(`${API_ENDPOINTS.TASKS}/${id}`, task);
-  return response.data;
+  return response.data.data;
 };
 
 export const deleteTask = async (id: number): Promise<void> => {

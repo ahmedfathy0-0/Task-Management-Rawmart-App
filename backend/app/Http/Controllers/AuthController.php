@@ -12,11 +12,19 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -50,13 +58,14 @@ class AuthController extends Controller
         if (!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized',
+                'message' => 'Invalid email or password',
             ], 401);
         }
 
         $user = Auth::guard('api')->user();
         return response()->json([
                 'status' => 'success',
+                'message' => 'User logged in successfully',
                 'user' => $user,
                 'authorisation' => [
                     'token' => $token,
@@ -78,6 +87,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
+            'message' => 'Token refreshed successfully',
             'user' => Auth::guard('api')->user(),
             'authorisation' => [
                 'token' => Auth::guard('api')->refresh(),

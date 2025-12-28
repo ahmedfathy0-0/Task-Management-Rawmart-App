@@ -34,7 +34,11 @@ class TaskController extends Controller
             'user_id' => Auth::guard('api')->id(),
         ]);
 
-        return response()->json($task, 201);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Task created successfully',
+            'data' => $task
+        ], 201);
     }
 
     public function update(Request $request, $id)
@@ -42,11 +46,15 @@ class TaskController extends Controller
         $task = Task::find($id);
 
         if (!$task || $task->user_id !== Auth::guard('api')->id()) {
-            return response()->json(['message' => 'Not found or Unauthorized'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Not found or Unauthorized'], 404);
         }
 
         $task->update($request->all());
-        return response()->json($task);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Task updated successfully',
+            'data' => $task
+        ]);
     }
 
     public function destroy($id)
@@ -54,10 +62,13 @@ class TaskController extends Controller
         $task = Task::find($id);
 
         if (!$task || $task->user_id !== Auth::guard('api')->id()) {
-            return response()->json(['message' => 'Not found or Unauthorized'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Not found or Unauthorized'], 404);
         }
 
         $task->delete();
-        return response()->json(['message' => 'Task deleted']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Task deleted successfully'
+        ]);
     }
 }
