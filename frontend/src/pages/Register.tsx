@@ -9,6 +9,9 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string[];
+  }>({});
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -20,6 +23,7 @@ const Register: React.FC = () => {
       return;
     }
     setError("");
+    setValidationErrors({});
     setLoading(true);
     try {
       const response = await apiRegister({
@@ -31,7 +35,12 @@ const Register: React.FC = () => {
       login(response.authorisation.token, response.user);
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to register");
+      if (err.response?.status === 422 && err.response?.data?.errors) {
+        setValidationErrors(err.response.data.errors);
+        setError(err.response?.data?.message || "Validation failed");
+      } else {
+        setError(err.response?.data?.message || "Failed to register");
+      }
       console.error(err);
     } finally {
       setLoading(false);
@@ -61,6 +70,11 @@ const Register: React.FC = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+            {validationErrors.name && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.name[0]}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -73,6 +87,11 @@ const Register: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {validationErrors.email && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.email[0]}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -85,6 +104,11 @@ const Register: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {validationErrors.password && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.password[0]}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
