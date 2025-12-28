@@ -119,7 +119,13 @@ The database seeder creates two users for you to test with:
 
 ## 📸 Screenshots
 
-_(Screenshots to be added in the `screenshots` folder)_
+| Page                 | Screenshot                                 |
+| :------------------- | :----------------------------------------- |
+| **Login Page**       | ![Login Page](screenshots/login.png)       |
+| **Register Page**    | ![Register Page](screenshots/register.png) |
+| **Dashboard (Home)** | ![Task Dashboard](screenshots/home.png)    |
+| **Create Task**      | ![Create Task](screenshots/create.png)     |
+| **Task Card**        | ![Task Details](screenshots/card.png)      |
 
 ---
 
