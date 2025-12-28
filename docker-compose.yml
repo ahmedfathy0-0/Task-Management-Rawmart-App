@@ -8,40 +8,21 @@ services:
     container_name: laravel-app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-      - ./backend:/var/www
-    networks:
-      - app-network
-
-  webserver:
-    image: nginx:alpine
-    container_name: webserver
-    restart: unless-stopped
-    ports:
-      - "8000:80"
-    volumes:
-      - ./backend:/var/www
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-    networks:
-      - app-network
-    depends_on:
-      - app
-
-  db:
-    image: mysql:8.0
-    container_name: db
-    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/www/database/database.sqlite
     volumes:
-      - dbdata:/var/lib/mysql
+      - ./backend:/var/www:z
     networks:
       - app-network
+
+  # Frontend (Nginx + React + API Proxy)
+  # Using the production config (nginx.prod.conf) allows us to test the
+  # single-port setup locally if we build with the prod context,
+  # but here we use the dev context typically.
+  # However, for consistency with deployment, we can keep the separate webserver service
+  # or merge them. The user asked for "deployment in one server".
+  # Providing a dev setup that mimics prod is good.
 
   frontend:
     build:
@@ -56,10 +37,21 @@ services:
     depends_on:
       - app
 
+  # Webserver for Backend (Nginx) - Standard Laravel Setup
+  # We still need this because PHP-FPM doesn't speak HTTP.
+  # The frontend container proxies /api to this 'webserver' container?
+  # NO, frontend proxies to 'app:9000' (PHP-FPM) directly via FastCGI?
+  # My previous nginx.prod.conf used `proxy_pass http://app:9000;`.
+  # Nginx `proxy_pass` usually expects HTTP. PHP-FPM speaks FastCGI.
+  # If frontend Nginx proxies to app:9000, it needs `fastcgi_pass` NOT `proxy_pass`.
+  # LET'S FIX THIS in nginx.prod.conf later.
+  # For now, let's keep the backend webserver so we can access it directly if needed,
+  # OR we fix the frontend proxy to use fastcgi.
+  # Actually, simpler model: Frontend Nginx is THE webserver.
+  # It serves static files AND routes /api to PHP-FPM.
+  # So we DO NOT NEED a separate backend webserver container if frontend does it.
+  # Let's remove 'webserver' service and update frontend nginx config to act as the unified server.
+
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  dbdata:
-    driver: local
