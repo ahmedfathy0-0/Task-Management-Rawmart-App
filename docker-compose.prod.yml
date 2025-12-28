@@ -2,7 +2,7 @@ version: "3.8"
 services:
   # Laravel App (Backend)
   app:
-    image: ${DOCKER_USERNAME}/laravel-app:latest
+    image: ahmedfathy00/laravel-app:latest
     container_name: laravel-app
     restart: always
     working_dir: /var/www
@@ -24,7 +24,7 @@ services:
 
   # Frontend (Nginx + React + Backend Proxy)
   frontend:
-    image: ${DOCKER_USERNAME}/react-frontend:latest
+    image: ahmedfathy00/react-frontend:latest
     container_name: react-frontend
     restart: always
     ports:
