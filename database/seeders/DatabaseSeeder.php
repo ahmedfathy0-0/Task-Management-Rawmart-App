@@ -15,11 +15,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // User 1
+        User::factory()
+            ->has(
+                \App\Models\Task::factory()->count(5)->state(function (array $attributes, User $user) {
+                    return ['user_id' => $user->id];
+                })
+            )
+            ->create([
+                'name' => 'Admin User',
+                'email' => 'admin@rawmart.com',
+                'password' => 'password',
+            ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User 2
+        User::factory()
+             ->has(
+                \App\Models\Task::factory()->count(3)->state(function (array $attributes, User $user) {
+                    return ['user_id' => $user->id];
+                })
+            )
+            ->create([
+                'name' => 'Regular User',
+                'email' => 'user@rawmart.com',
+                'password' => 'password',
+            ]);
     }
 }
