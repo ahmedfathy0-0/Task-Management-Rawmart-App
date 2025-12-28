@@ -16,7 +16,7 @@ class TaskController extends Controller
     public function index()
     {
         // Get tasks for the CURRENTLY logged in user only
-        $tasks = Task::where('user_id', Auth::guard('api')->id())->get();
+        $tasks = Task::where('user_id', Auth::guard('api')->id())->paginate(5);
         return response()->json($tasks);
     }
 
