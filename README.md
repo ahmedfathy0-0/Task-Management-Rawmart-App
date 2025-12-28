@@ -8,74 +8,85 @@ A full-stack task management application built with **Laravel 11** (backend) and
 - **Task Management**: Create, Read, Update, and Delete (CRUD) tasks.
 - **Status Tracking**: Mark tasks as Pending, In Progress, or Done.
 - **Responsive UI**: Modern interface with instant feedback and error handling.
+- **Dockerized**: Fully containerized for easy deployment.
 
 ---
 
-## 🛠️ Setup Instructions
+## 🛠️ Deployment (Docker)
+
+The easiest way to run the project is using Docker. This ensures environment consistency.
+
+### Prerequisites
+
+- Docker & Docker Compose installed on your machine.
+
+### Steps to Run
+
+1.  **Clone the repository**:
+
+    ```bash
+    git clone <repository_url>
+    cd <project_directory>
+    ```
+
+2.  **Environment Setup**:
+
+    - Navigate to `backend/` and create `.env` from example:
+      ```bash
+      cd backend
+      cp .env.example .env
+      ```
+    - Update `.env` database credentials to match `docker-compose.yml`:
+      ```ini
+      DB_CONNECTION=mysql
+      DB_HOST=db
+      DB_PORT=3306
+      DB_DATABASE=app_db
+      DB_USERNAME=app_user
+      DB_PASSWORD=password
+      ```
+
+3.  **Start Containers**:
+
+    - From the project root:
+      ```bash
+      docker-compose up -d --build
+      ```
+
+4.  **Finalize Backend**:
+
+    - Run migrations and seeds inside the container:
+      ```bash
+      docker-compose exec app php artisan migrate --seed
+      docker-compose exec app php artisan key:generate
+      docker-compose exec app php artisan jwt:secret
+      ```
+
+5.  **Access the App**:
+    - **Frontend**: http://localhost:5173
+    - **Backend API**: http://localhost:8000
+
+---
+
+## 🛠️ Local Development (Manual)
+
+If you prefer running without Docker:
 
 ### Backend (Laravel)
 
-1.  Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-2.  Install dependencies:
-    ```bash
-    composer install
-    ```
-3.  Set up environment file:
-    ```bash
-    cp .env.example .env
-    ```
-4.  Configure your database in `.env` (default is SQLite, but you can use MySQL/Postgres).
-5.  Generate Application Key:
-    ```bash
-    php artisan key:generate
-    ```
-6.  Generate JWT Secret:
-    ```bash
-    php artisan jwt:secret
-    ```
-7.  Run Migrations and Seed Database:
-    ```bash
-    php artisan migrate --seed
-    ```
-    _This will create the database tables and seed test users._
+1.  `cd backend`
+2.  `composer install`
+3.  `cp .env.example .env` (Configure DB settings)
+4.  `php artisan key:generate`
+5.  `php artisan jwt:secret`
+6.  `php artisan migrate --seed`
+7.  `php artisan serve` (Runs on `http://localhost:8000`)
 
 ### Frontend (React)
 
-1.  Navigate to the frontend directory:
-    ```bash
-    cd frontend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-
----
-
-## ▶️ Running the Project
-
-You need to run both the backend and frontend servers simultaneously.
-
-**Terminal 1 (Backend):**
-
-```bash
-cd backend
-php artisan serve
-```
-
-_Backend runs on `http://localhost:8000`_
-
-**Terminal 2 (Frontend):**
-
-```bash
-cd frontend
-npm run dev
-```
-
-_Frontend runs on `http://localhost:5173`_
+1.  `cd frontend`
+2.  `npm install`
+3.  `npm run dev` (Runs on `http://localhost:5173`)
 
 ---
 
